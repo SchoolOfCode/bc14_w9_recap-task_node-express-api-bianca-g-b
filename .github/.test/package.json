@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "version": "0.0.0",
+  "dependencies": {
+    "jest": "^27.5.1",
+    "supertest": "^6.2.2"
+  },
+  "scripts": {
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --json --outputFile=results.json"
+  },
+  "type": "module"
+}
