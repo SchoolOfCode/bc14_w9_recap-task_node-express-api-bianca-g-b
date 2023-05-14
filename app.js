@@ -49,7 +49,7 @@ app.get("/api/users/:id", async (req, res) => {
   })
 } 
 // if success is false, use 404 status Not found, and return object with success set to false and payload to value(null) returned by function
-  res.status(404).json({
+  return res.status(404).json({
     success:success,
     payload: userByID
   })
@@ -58,37 +58,61 @@ app.get("/api/users/:id", async (req, res) => {
 // Write POST REQUEST for createUser function
 app.post("/api/users", async (req, res) => {
   const addedUser = await createUser(req.body);
-  // Id addedUser returns null, use 400 status Bad Request, and return object with success set to false and payload to a string giving information to the user
-    if (addedUser===null) {
-    return res.status(400).json({
-      success: false,
-      payload: "Incorrect request. Possibly insufficient information provided."
-    })
-  } 
+  // set variable success to boolean value, true if addedUser returns an object, false if it returns null
+  const success = addedUser !== null;
+  
   // If all the information required is provided in the body, return json object with success set to true and object returned by function
-  return res.json({
-    success: true,
-    payload: addedUser
-  })
+  if (success) {
+    return res.json({
+      success: success,
+      payload: addedUser
+    })
+  }
+
+  // If addedUser returns null, use 400 status Bad Request, and return object with success set to false and payload to a string giving information to the user
+    return res.status(400).json({
+      success: success,
+      payload: "Incorrect request. Possibly insufficient information provided."
+    }) 
 })
 
-// Write patch request for updateUserByID function
+// Write PATCH REQUEST for updateUserByID function
 app.patch("/api/users/:id", async (req, res) => {
   const updatedUser = await updateUserByID(req.params.id, req.body)
   // console.log(req)
+  // Set variable success to boolean, true if updatesUser return an object and false if it returns null
+  const success = updatedUser !== null;
+  // If success is true, return object with success set to true and updated user object
+  if (success) {
   return res.json({
-    success: true,
+    success: success,
+    payload: updatedUser
+  })
+}
+  // If success is false, use 404 status Not found and return obj with success value set to false, and null value for payload
+  return res.status(404).json({
+    success: success,
     payload: updatedUser
   })
 })
 
-// Write delete request for deleteUserByID function
+// Write DELETE REQUEST for deleteUserByID function
 app.delete("/api/users/:id", async (req, res) => {
   const deletedUser = await deleteUserByID(req.params.id);
   // console.log(req);
   // console.log(deletedUser);
+  // Set variable success to boolean, true if deletedUser returns an object, false if it returns null
+  const success = deletedUser !==null;
+  // If success is true, respond with object containing success value set to true, and object deleted successfully
+  if (success) {
   return res.json({
     success: true,
+    payload: deletedUser
+  })
+}
+// If success if false, use 404 status Not found and return object containing success value set to false, and payload set to null
+  return res.status(404).json({
+    success: success,
     payload: deletedUser
   })
 })

@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 
 const fileName = "users.json";
 
-// First step - write the helper functions
+// Write the helper functions
 
 
 // Function to return all the users
@@ -64,33 +64,29 @@ export async function updateUserByID(id, updatedUser) {
     // Read 
     const usersJSON = await fs.readFile(fileName, "utf-8");
     // Parse into JS array of objects
-    const users = JSON.parse(usersJSON);
-    // Set updatedUser to null
-    // updatedUser = null;
+    const users = JSON.parse(usersJSON);  
+    // Create variable updated, set to null
+    let updated = null;
     /* Write for loop to iterate through the array of users
         - if a user id matches the id parameter:
             * update the user object with updatedUser paramater
-            * keep the id and have the other values be passed by the user
+            * keep the id and have the rest of the values either changed by the user, or if not, kept as they were before
         */
     for (let i=0; i<users.length; i++) {
         if (users[i].id===id) {
-            updatedUser = {
-                id: id,
-                first_name: updatedUser.first_name,
-                last_name: updatedUser.last_name,
-                email: updatedUser.email,
-                catchphrase: updatedUser.catchphrase
-            }
-            users[i]=updatedUser;
+            const notUpdated = users[i];
+            updated = {id:id,
+                ...notUpdated,
+                ...updatedUser}
+            // Update object in users array to have the new updated values    
+            users[i]=updated;
 
             // Stringify updated users array of objects and write back to the users.json file
             await fs.writeFile(fileName, JSON.stringify(users))
-            // return updatedUser object (or null, if id not matching)
-            return updatedUser
         }
     }
-    // Return null if matching id is not found
-    return null;
+    // Return null if a matching id is not found
+    return updated;
 }
 
 export async function deleteUserByID(id) {
@@ -112,7 +108,7 @@ export async function deleteUserByID(id) {
             break;
         }
     }
-    // If a matching index was found
+    // If a matching index is found
     if (matchingIndex!==null) {
     // Delete user with matching id
     users.splice(matchingIndex,1);
