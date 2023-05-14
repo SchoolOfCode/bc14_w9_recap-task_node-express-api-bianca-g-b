@@ -41,22 +41,23 @@ export async function createUser(newUser) {
     const usersJSON = await fs.readFile(fileName, "utf-8");
     // Parse into JS array of objects
     const users = JSON.parse(usersJSON);
-    // modify the newUser object  - set random ID, and have the other values be passed by the user
-    newUser = {
-        id: uuidv4(),
-        first_name: newUser.first_name,
-        last_name: newUser.last_name,
-        email: newUser.email,
-        catchphrase: newUser.catchphrase
+    
+    // create variable createdUser, that contains and id and values passed by user
+    const createdUser = {id: uuidv4(),...newUser}
+    // If the user fills in all the required fields:
+    if (Object.values(newUser).length === 4) {
+        // add the new object to the array of objects
+        users.push(createdUser);
+        // stringify modified array of objects
+        const strUsers = JSON.stringify(users);
+        // write strUsers to users.json
+        await fs.writeFile(fileName, strUsers);
+        // return the newly created object
+        return createdUser;
+    // if the user doesn't provide all the required information, return null
+    } else {
+        return null;
     }
-    // push the newUser object to the users array of objects
-    users.push(newUser);
-    // stringify modified array of objects
-    const strUsers = JSON.stringify(users);
-    // write strUsers to users.json
-    await fs.writeFile(fileName, strUsers);
-    // return the newUser obj
-    return newUser;
 }
 
 export async function updateUserByID(id, updatedUser) {

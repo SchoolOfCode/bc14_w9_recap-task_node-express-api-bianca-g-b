@@ -33,18 +33,39 @@ app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
 
-// Write get request for getUserByID function
+// Write GET REQUEST for getUserByID function
 app.get("/api/users/:id", async (req, res) => {
   const userByID = await getUserByID(req.params.id)
+  // Set variable success to take value of boolen
+  //  true if getUserByID function returns an object (not null)
+  //  false if getUserByID function returns null
+  const success = userByID !== null;
+
+  // if success is true, return json object with success set to true and object returned by function
+  if (success) {
   return res.json({
-    success: true,
+    success: success,
+    payload: userByID
+  })
+} 
+// if success is false, use 404 status Not found, and return object with success set to false and payload to value(null) returned by function
+  res.status(404).json({
+    success:success,
     payload: userByID
   })
 })
 
-// Write post request for createUser function
+// Write POST REQUEST for createUser function
 app.post("/api/users", async (req, res) => {
   const addedUser = await createUser(req.body);
+  // Id addedUser returns null, use 400 status Bad Request, and return object with success set to false and payload to a string giving information to the user
+    if (addedUser===null) {
+    return res.status(400).json({
+      success: false,
+      payload: "Incorrect request. Possibly insufficient information provided."
+    })
+  } 
+  // If all the information required is provided in the body, return json object with success set to true and object returned by function
   return res.json({
     success: true,
     payload: addedUser
