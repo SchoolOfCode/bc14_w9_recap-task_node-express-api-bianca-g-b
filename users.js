@@ -111,6 +111,8 @@ export async function deleteUserByID(id) {
     }
     // Delete user with matching id
     users.splice(matchingIndex,1);
+    // Stringify updated array of objects and write to JSON file
+    await fs.writeFile(fileName, JSON.stringify(users));
     // Return deleted user object (or null, if id not matching)
     return deletedUser;
 }
