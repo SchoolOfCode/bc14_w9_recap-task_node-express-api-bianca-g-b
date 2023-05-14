@@ -65,7 +65,7 @@ export async function updateUserByID(id, updatedUser) {
     // Parse into JS array of objects
     const users = JSON.parse(usersJSON);
     // Set updatedUser to null
-    updatedUser = null;
+    // updatedUser = null;
     /* Write for loop to iterate through the array of users
         - if a user id matches the id parameter:
             * update the user object with updatedUser paramater
@@ -75,19 +75,21 @@ export async function updateUserByID(id, updatedUser) {
         if (users[i].id===id) {
             updatedUser = {
                 id: id,
-                first_name: newUser.first_name,
-                last_name: newUser.last_name,
-                email: newUser.email,
-                catchphrase: newUser.catchphrase
+                first_name: updatedUser.first_name,
+                last_name: updatedUser.last_name,
+                email: updatedUser.email,
+                catchphrase: updatedUser.catchphrase
             }
             users[i]=updatedUser;
-            break;
+
+            // Stringify updated users array of objects and write back to the users.json file
+            await fs.writeFile(fileName, JSON.stringify(users))
+            // return updatedUser object (or null, if id not matching)
+            return updatedUser
         }
     }
-    // Stringify updated users array of objects and write back to the users.json file
-    await fs.writeFile(fileName, JSON.stringify(users))
-    // return updatedUser object (or null, if id not matching)
-    return updatedUser;
+    // Return null if matching id is not found
+    return null;
 }
 
 export async function deleteUserByID(id) {
@@ -109,10 +111,14 @@ export async function deleteUserByID(id) {
             break;
         }
     }
+    // If a matching index was found
+    if (matchingIndex!==null) {
     // Delete user with matching id
     users.splice(matchingIndex,1);
     // Stringify updated array of objects and write to JSON file
     await fs.writeFile(fileName, JSON.stringify(users));
+    }
+
     // Return deleted user object (or null, if id not matching)
     return deletedUser;
 }
